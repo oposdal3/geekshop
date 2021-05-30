@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+	<link rel="stylesheet" href="{% static '/style.css' %}">
+{% endblock %}
+
+{% block content %}
+		<div class="details">
+			<div class="links clearfix">
+				{{ request.resolve_match }}
+				<ul class="links-menu">
+
+				</ul>
+			</div>
+{{ product.name }}
+		</div>
+{% endblock %}
+

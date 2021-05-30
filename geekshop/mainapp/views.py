@@ -1,8 +1,17 @@
 from django.shortcuts import render
+from .models import Product
 
 
-def products(request):
+def products(request, pk=None):
     title = 'каталог/продукты'
+
+    if pk:
+        product = Product.objects.get(pk=pk)
+
+        context = {
+            'product': product
+        }
+        return render(request, 'product.html', context=context)
 
     links_menu = [
         {'href': 'products_all', 'name': 'все'},
