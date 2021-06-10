@@ -18,6 +18,7 @@ from django.urls import path, include
 from . import views
 from authapp import urls as authapp_urls
 from mainapp import urls as mainapp_urls
+from basketapp import urls as basketapp_urls
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -25,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include(authapp_urls), name='auth'),
     path('products/', include(mainapp_urls), name='products'),
+    path('basket/', include(basketapp_urls), name='basket'),
     path('', views.index, name='index'),
     path('contact/', views.contacts, name='contacts'),
 ]
