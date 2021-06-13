@@ -1,5 +1,7 @@
-<div class="header clearfix">
-    <a href="{% url 'index' %}" class="logo"></a>
+<div class="header d-flex justify-content-start">
+    <div>
+        <a href="{% url 'index' %}" class="logo"></a>
+    </div>
     <ul class="menu">
         <li><a href="{% url 'index' %}" class="{% if request.resolver_match.url_name == 'index' %} active {% endif %}">домой</a></li>
         <li><a href="{% url 'products'%}" class="{% if request.resolver_match.url_name == 'products' %} active {% endif %}">продукты</a></li>
@@ -20,9 +22,12 @@
         </li>
     </ul>
     <a href="#" class="search"></a>
-    <a href="{% url 'basket' %}" class="basket">
+    {% if basket %}
+    <a href="{% url 'basket' %}" class="fa fa-shopping-basket basket">
         <span>
-            {% if basket %} {{ basket|length }} {% endif %}
+            {{ basket.0.total_cost|floatformat:0 }} руб
+            {{ basket.0.total_quantity }} шт.
         </span>
     </a>
+    {% endif %}
 </div>
