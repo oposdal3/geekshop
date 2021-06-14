@@ -15,7 +15,7 @@
               <th scope="row">{{ forloop.counter }}</th>
               <td>{{ item.product }}</td>
               <td><input type="number" name="{{ item.pk }}" min="0" value="{{ item.quantity }}"></td>
-              <td><a href="{% url 'remove' item.pk %}">x</a></td>
+              <td><a href="{% url 'basket:remove' item.pk %}">x</a></td>
           </tr>
         {% endfor %}
 
@@ -25,8 +25,7 @@
 <div class="row">
     {% if basket %}
         <div class="basket_summary">
-            В карзине {{ basket.0.total_quantity }} товаров общей стоимостью
-                    {{ basket.0.total_cost }} руб.
+            В карзине {{ basket.0.total_quantity }} товаров общей стоимостью {{ basket.0.total_cost }} руб.
          </div>
     {% endif %}
 </div>

@@ -3,27 +3,27 @@
         <a href="{% url 'index' %}" class="logo"></a>
     </div>
     <ul class="menu">
-        <li><a href="{% url 'index' %}" class="{% if request.resolver_match.url_name == 'index' %} active {% endif %}">домой</a></li>
-        <li><a href="{% url 'products'%}" class="{% if request.resolver_match.url_name == 'products' %} active {% endif %}">продукты</a></li>
+        <li><a href="{% url 'index' %}" class="{% if request.resolver_match.url_name == 'index' and request.resolver_match.namespace == '' %} active {% endif %}">домой</a></li>
+        <li><a href="{% url 'products:index'%}" class="{% if request.resolver_match.url_name == 'index' and request.resolver_match.namespace == 'products' %} active {% endif %}">продукты</a></li>
         <li><a href="{% url 'contacts'%}" class="{% if request.resolver_match.url_name == 'contacts' %} active {% endif %}">контакты</a></li>
         {% if user.is_authenticated %}
         <li>
-            <a href="{% url 'edit' %}">
+            <a href="{% url 'auth:edit' %}">
                 {{ user.first_name|default:'Пользователь' }}
             </a>
         </li>
         {% endif %}
         <li>
             {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}">выйти</a>
+            <a href="{% url 'auth:logout' %}">выйти</a>
             {% else %}
-            <a href="{% url 'login' %}">войти</a>
+            <a href="{% url 'auth:login' %}">войти</a>
             {% endif %}
         </li>
     </ul>
     <a href="#" class="search"></a>
     {% if basket %}
-    <a href="{% url 'basket' %}" class="fa fa-shopping-basket basket">
+    <a href="{% url 'basket:view' %}" class="fa fa-shopping-basket basket">
         <span>
             {{ basket.0.total_cost|floatformat:0 }} руб
             {{ basket.0.total_quantity }} шт.

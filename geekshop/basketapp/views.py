@@ -8,13 +8,15 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def basket(request):
-    basket = []
+    title = 'Корзина'
+    basket_items = []
 
     if request.user.is_authenticated:
-        basket = Basket.objects.filter(user=request.user)
+        basket_items = Basket.objects.filter(user=request.user).order_by('product__category')
 
     context = {
-        'basket': basket,
+        'basket': basket_items,
+        'title': title,
     }
 
     return render(request, 'basketapp/basket.html', context=context)

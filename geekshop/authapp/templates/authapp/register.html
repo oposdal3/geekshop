@@ -3,7 +3,7 @@
 
 {% block content %}
     <div class="col-3 mx-auto">
-        <form class="form-horizontal" action="{% url 'register' %}" method="post" enctype="multipart/form-data">
+        <form class="form-horizontal" action="{% url 'auth:register' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ register_form.as_p }}
             <input class="form-cotnrol" type="submit" value="зарегистрироваться">

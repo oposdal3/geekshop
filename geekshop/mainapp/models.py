@@ -2,22 +2,25 @@ from django.db import models
 
 
 class ProductCategory(models.Model):
-    name = models.CharField(verbose_name='имя', max_length=64, unique=True)
+    name = models.CharField(
+        verbose_name='имя',
+        max_length=64,
+        unique=True,
+    )
     description = models.TextField(
         verbose_name='описание',
-        blank=True
+        blank=True,
+        null=True,
     )
-
     created = models.DateTimeField(
-        auto_now_add=True
+        auto_now_add=True,
     )
-
     updated = models.DateTimeField(
-        auto_now=True
+        auto_now=True,
     )
 
     def __str__(self):
-        return f'{self.name} - {self.id} -- {self.created}'
+        return f'{self.name} -- {self.id} -- {self.created}'
 
     class Meta:
         verbose_name = 'категория',
@@ -38,39 +41,34 @@ class Product(models.Model):
     image = models.ImageField(
         upload_to='products_images',
         blank=True,
-        verbose_name='фото товара',
+        verbose_name='фото тавара',
     )
     short_desc = models.CharField(
-        verbose_name='карткое описание товара',
+        verbose_name='краткое описание товара',
         max_length=60,
         blank=True,
     )
     description = models.TextField(
         verbose_name='описание продукта',
-        blank=True
+        blank=True,
     )
     price = models.DecimalField(
         verbose_name='цена продукта',
         max_digits=8,
         decimal_places=2,
-        default=0
+        default=0,
     )
     quantity = models.PositiveIntegerField(
         verbose_name='количество на складе',
-        default=0
+        default=0,
     )
 
     created = models.DateTimeField(
-        auto_now_add=True
+        auto_now_add=True,
     )
-
     updated = models.DateTimeField(
-        auto_now=True
+        auto_now=True,
     )
 
     def __str__(self):
-        return f'{self.name} - {self.id} -- {self.created}'
-
-    class Meta:
-        verbose_name = 'продукт',
-        verbose_name_plural = 'продукты'
+        return f'{self.name} -- {self.id} -- {self.created}'

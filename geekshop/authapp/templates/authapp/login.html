@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-    <form class="form-horizontal" action="{% url 'login' %}"method="post">
+    <form class="form-horizontal" action="{% url 'auth:login' %}"method="post">
         {% csrf_token %}
         {{ login_form.as_p }}
         <br>
@@ -12,7 +12,7 @@
         <input class="form-control btn btn-primary" type="submit" value="войти">
     </form>
     <button class="btn btn-round form-control">
-        <a href="{% url 'register' %}" class="">
+        <a href="{% url 'auth:register' %}" class="">
             зарегистрироваться
         </a>
     </button>
