@@ -1,5 +1,5 @@
 <div class="header d-flex justify-content-start">
-    <div>
+    <div class="col-3">
         <a href="{% url 'index' %}" class="logo"></a>
     </div>
     <ul class="menu">
@@ -11,6 +11,11 @@
             <a href="{% url 'auth:edit' %}">
                 {{ user.first_name|default:'Пользователь' }}
             </a>
+        </li>
+        {% endif %}
+        {% if user.is_superuser %}
+        <li>
+            <a href="{% url 'admin_staff:users' %}">админка</a>
         </li>
         {% endif %}
         <li>
