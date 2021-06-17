@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from basketapp.models import Basket
 from .models import Product, ProductCategory
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import random
 
 
@@ -58,3 +59,5 @@ def products(request, pk=None):
         'basket': basket,
     }
     return render(request, 'products.html', context=context)
+
+
