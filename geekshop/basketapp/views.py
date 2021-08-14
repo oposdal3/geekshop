@@ -1,8 +1,11 @@
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
+from django.urls import reverse
+
 from basketapp.models import Basket
 from mainapp.models import Product
+
 from django.contrib.auth.decorators import login_required
 
 
@@ -34,6 +37,10 @@ def basket_add(request, pk):
     basket.quantity += 1
     basket.save()
 
+    if 'login' in request.META.get('HTTP_REFERER'):
+        # Возвращаемся на страницу с товаром
+        return HttpResponseRedirect(reverse('products:category', args=[pk]))
+        # Иначе на реферальную страницу
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 

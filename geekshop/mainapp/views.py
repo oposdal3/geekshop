@@ -1,15 +1,12 @@
 from django.shortcuts import render, get_object_or_404
 from basketapp.models import Basket
+
+from django.contrib.auth.decorators import user_passes_test
+from django.utils.decorators import method_decorator
 from .models import Product, ProductCategory
+from django.views.generic import DetailView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import random
-
-
-def get_basket(user):
-    if user.is_authenticated:
-        return Basket.objects.filter(user=user)
-    else:
-        return []
 
 
 def get_hot_product():
@@ -24,11 +21,28 @@ def get_same_products(hot_product):
     return same_products
 
 
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'mainapp/product.html'
+    context_object_name = 'product'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        context['title'] = context.get(self, self.object.name)
+        context['links_menu'] = ProductCategory.objects.filter(is_active=True)
+        return self.render_to_response(context)
+
+    @method_decorator(user_passes_test(lambda u: u.is_superuser))
+    def dispatch(self, *args, **kwargs):
+
+        return super().dispatch(*args, **kwargs)
+
+
 def products(request, pk=None):
     title = 'каталог/продукты'
     links_menu = ProductCategory.objects.all()
 
-    basket = []
     if request.user.is_authenticated:
         basket = Basket.objects.filter(user=request.user)
 
@@ -44,7 +58,6 @@ def products(request, pk=None):
             'title': title,
             'category': category,
             'links_menu': links_menu,
-            'basket': basket,
         }
         return render(request, 'products.html', context=context)
 
@@ -56,7 +69,6 @@ def products(request, pk=None):
         'title': title,
         'hot_product': hot_product,
         'same_products': same_products,
-        'basket': basket,
     }
     return render(request, 'products.html', context=context)
 
