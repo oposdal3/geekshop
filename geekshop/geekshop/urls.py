@@ -28,6 +28,7 @@ urlpatterns = [
     path('admin_staff/', include(adminapp_urls, namespace='admin_staff'), name='admin_staff'),
     path('auth/', include(authapp_urls, namespace='auth'), name='auth'),
     path('products/', include(mainapp_urls, namespace='products'), name='products'),
+    path('order/', include('orderapp.urls', namespace='order'), name='order'),
     path('basket/', include(basketapp_urls, namespace='basket'), name='basket'),
     path('', views.index, name='index'),
     path('contact/', views.contacts, name='contacts'),
