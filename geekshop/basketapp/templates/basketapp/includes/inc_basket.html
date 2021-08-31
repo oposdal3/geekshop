@@ -1,0 +1,11 @@
+{% if basket %}
+<div class="top-basket">
+    <p class="text-center"><a href="{% url 'basket:view' %}" class="fa fa-shopping-basket">
+    <span>
+        товаров: {{ basket|length }},
+        позиций: ({{ basket.0.total_quantity }} шт)
+        на сумму {{ basket.0.total_cost|floatformat:0 }}
+    </span>
+    </a></p>
+</div>
+{% endif %}

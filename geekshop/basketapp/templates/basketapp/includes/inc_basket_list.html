@@ -1,31 +1,38 @@
+{% if basket %}
 <div class="row">
-    <table class="table">
-      <thead>
+    <table class="table mt-3">
+        <thead>
         <tr>
-          <th scope="col">#</th>
-          <th scope="col">Продукт</th>
-          <th scope="col">Количество</th>
-          <th scope="col">Удалить</th>
+            <th scope="col">#</th>
+            <th scope="col">Название</th>
+            <th scope="col">Количество</th>
+            <th scope="col">Цена за ед.</th>
+            <th scope="col">Удалить</th>
         </tr>
-      </thead>
-      <tbody>
-
+        </thead>
+        <tbody>
         {% for item in basket %}
-          <tr>
-              <th scope="row">{{ forloop.counter }}</th>
-              <td>{{ item.product }}</td>
-              <td><input type="number" name="{{ item.pk }}" min="0" value="{{ item.quantity }}"></td>
-              <td><a href="{% url 'basket:remove' item.pk %}">x</a></td>
-          </tr>
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{ item.product.name }}</td>
+            <td><input type="number" name="{{ item.pk }}" min="0" value="{{ item.quantity }}"></td>
+            <td>{{ item.product.price|floatformat:0}} руб.</td>
+            <td><a href="{% url 'basket:remove' item.pk %}">X</a></td>
+        </tr>
         {% endfor %}
+        </tbody>
 
-      </tbody>
+        <tfoot>
+        <tr>
+            <th colspan="2">Итого</th>
+            <td>{{ basket.0.total_quantity }}</td>
+            <td>{{ basket.0.total_cost|floatformat:0 }} руб.</td>
+        </tr>
+        </tfoot>
     </table>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        Ваша корзина пока пуста. Начните делать покупки.
+    </div>
 </div>
-<div class="row">
-    {% if basket %}
-        <div class="basket_summary">
-            В карзине {{ basket.0.total_quantity }} товаров общей стоимостью {{ basket.0.total_cost }} руб.
-         </div>
-    {% endif %}
-</div>
+{% endif %}

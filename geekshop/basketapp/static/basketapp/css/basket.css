@@ -1,0 +1,17 @@
+.top-basket p{
+	width: 370px;
+	border-radius: 6px;
+	border-style: solid;
+	border-width: medium;
+	border-color: #efefef;
+	background-color: #f4f4f4;
+	margin: 7px auto;
+}
+
+.top-basket p a{
+	text-decoration: none;
+	color:#212128;
+}
+.top-basket p a:hover{
+	color:#7d7d7d;
+}

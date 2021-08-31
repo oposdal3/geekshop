@@ -1,14 +1,15 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy, reverse
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.forms import inlineformset_factory
+from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy, reverse
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
 from basketapp.models import Basket
+from mainapp.models import Product
 from orderapp.forms import OrderItemForm
 from orderapp.models import Order, OrderItem
 
@@ -17,29 +18,48 @@ class OrderList(LoginRequiredMixin, ListView):
     model = Order
 
     def get_queryset(self):
+        """
+        Получить заказы
+        :return: список заказов определенного пользователя
+        """
         return Order.objects.filter(user=self.request.user)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(OrderList, self).get_context_data(**kwargs)
+
+        if self.request.user.first_name:
+            title = f'Ваши заказы, {self.request.user.first_name}'
+        else:
+            title = f'Ваши заказы, {self.request.user.username}'
+
+        context['icon'] = 'bx bx-cart'
+        context['title'] = title
+        return context
 
 
 class OrderItemsCreate(LoginRequiredMixin, CreateView):
     model = Order
     fields = []
-    success_url = reverse_lazy('order:order_list')
+    context_object_name = 'object'
+    success_url = reverse_lazy('orderapp:order_list')
 
     def get_context_data(self, **kwargs):
-        data = super(OrderItemsCreate, self).get_context_data(**kwargs)
+        data = super().get_context_data(**kwargs)
         OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
 
         if self.request.POST:
             formset = OrderFormSet(self.request.POST)
         else:
             basket_items = Basket.objects.filter(user=self.request.user)
-            if len(basket_items):
-                OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=len(basket_items))
+            if basket_items.exists():
+                OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=basket_items.count())
                 formset = OrderFormSet()
                 for num, form in enumerate(formset.forms):
                     form.initial['product'] = basket_items[num].product
                     form.initial['quantity'] = basket_items[num].quantity
                     form.initial['price'] = basket_items[num].product.price
+                    # basket_items[num].delete()
+                basket_items.delete()
             else:
                 formset = OrderFormSet()
 
@@ -57,11 +77,10 @@ class OrderItemsCreate(LoginRequiredMixin, CreateView):
             if orderitems.is_valid():
                 orderitems.instance = self.object
                 orderitems.save()
-                Basket.objects.filter(user=self.request.user).delete()
 
+        # удаляем пустой заказ
         if self.object.get_total_cost() == 0:
             self.object.delete()
-            Basket.objects.filter(user=self.request.user).delete()
 
         return super(OrderItemsCreate, self).form_valid(form)
 
@@ -69,15 +88,15 @@ class OrderItemsCreate(LoginRequiredMixin, CreateView):
 class OrderUpdate(LoginRequiredMixin, UpdateView):
     model = Order
     fields = []
-    # context_object_name = 'object'
-    success_url = reverse_lazy('order:order_list')
+    context_object_name = 'object'
+    success_url = reverse_lazy('orderapp:order_list')
 
     def get_context_data(self, **kwargs):
         data = super(OrderUpdate, self).get_context_data(**kwargs)
         OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
 
         if self.request.POST:
-            data['orderitems'] = OrderFormSet(self.request.POST)
+            data['orderitems'] = OrderFormSet(self.request.POST, instance=self.object)
         else:
             formset = OrderFormSet(instance=self.object)
             for form in formset.forms:
@@ -89,7 +108,6 @@ class OrderUpdate(LoginRequiredMixin, UpdateView):
         return data
 
     def form_valid(self, form):
-
         context = self.get_context_data()
         orderitems = context['orderitems']
 
@@ -112,7 +130,7 @@ class OrderDelete(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('order:order_list')
 
 
-class OrderRead(LoginRequiredMixin, DetailView):
+class OrderRead(DetailView):
     model = Order
     template_name = 'orderapp/order_detail.html'
 
@@ -133,18 +151,25 @@ def order_forming_complete(request, pk):
 @receiver(pre_save, sender=OrderItem)
 @receiver(pre_save, sender=Basket)
 def product_quantity_update_save(sender, update_fields, instance, **kwargs):
-    if update_fields == 'quantity' or 'product':
-        if instance.pk:
-            instance.product.quantity -= instance.quantity - sender.get_item(instance.pk).quantity
-        else:
-            instance.product.quantity -= instance.quantity
-        instance.product.save()
+   if update_fields is 'quantity' or 'product':
+       if instance.pk:
+           instance.product.quantity -= instance.quantity - sender.get_item(instance.pk).quantity
+       else:
+           instance.product.quantity -= instance.quantity
+       instance.product.save()
 
 
 @receiver(pre_delete, sender=OrderItem)
 @receiver(pre_delete, sender=Basket)
 def product_quantity_update_delete(sender, instance, **kwargs):
-    instance.product.quantity += instance.quantity
-    instance.product.save()
+   instance.product.quantity += instance.quantity
+   instance.product.save()
 
-# Create your views here.
+
+def get_product_price(request, pk):
+    if request.is_ajax():
+        product = Product.objects.filter(pk=int(pk)).first()
+        if product:
+            return JsonResponse({'price': product.price})
+        else:
+            return JsonResponse({'price': 0})

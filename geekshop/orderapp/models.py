@@ -1,14 +1,16 @@
-from django.conf import settings
 from django.db import models
 
+from django.conf import settings
+
+from basketapp.models import Basket
 from mainapp.models import Product
 
 
 class OrderItemQuerySet(models.QuerySet):
     def delete(self, *args, **kwargs):
-        for el in self:
-            el.product.quantity += el.quantity
-            el.product.save()
+        for object in self:
+            object.product.quantity += object.quantity
+            object.product.save()
         super(OrderItemQuerySet, self).delete(*args, **kwargs)
 
 
@@ -22,45 +24,39 @@ class Order(models.Model):
 
     ORDER_STATUS_CHOICES = (
         (FORMING, 'формируется'),
-        (SENT_TO_PROCEED, 'отправлено в обработку'),
-        (PROCEEDED, 'обрабатывается'),
+        (SENT_TO_PROCEED, 'отправлен в обработку'),
         (PAID, 'оплачен'),
+        (PROCEEDED, 'обрабатывается'),
         (READY, 'готов к выдаче'),
         (CANCEL, 'отменен'),
     )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-    )
-    created = models.DateTimeField(
-        verbose_name='создан',
-        auto_now_add=True,
-    )
-    updated = models.DateTimeField(
-        verbose_name='обновлен',
-        auto_now=True,
-    )
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created = models.DateTimeField(verbose_name='создан', auto_now_add=True)
+    updated = models.DateTimeField(verbose_name='обновлен', auto_now=True)
     status = models.CharField(
         verbose_name='статус',
         max_length=3,
         choices=ORDER_STATUS_CHOICES,
-        default=FORMING,
+        default=FORMING
     )
-    is_active = models.BooleanField(
-        verbose_name='активен',
-        default=True
-    )
+    is_active = models.BooleanField(verbose_name='активен', default=True)
 
     class Meta:
-        ordering = ('-created',)
-        verbose_name = 'заказ'
-        verbose_name_plural = 'заказы'
+        ordering = ('-created',)  # сортировка по умолчанию от более новых к старым заказам
+        verbose_name = 'заказ'  # имя класса в единственном числе
+        verbose_name_plural = 'заказы'  # имя класса во множественном числе
 
     def __str__(self):
         return f'Текущий заказ: {self.id}'
 
     def get_total_quantity(self):
-        items = self.orderitems.select_related()
+        """
+        select_related работает путем создания соединения SQL и включения полей связанного объекта в оператор SELECT.
+        По этой причине select_related получает связанные объекты в том же запросе к базе данных.
+        :return:
+        """
+        items = self.orderitems.select_related()  # выбираем все дочерние элементы заказа
         return sum(list(map(lambda x: x.quantity, items)))
 
     def get_product_type_quantity(self):
@@ -71,6 +67,7 @@ class Order(models.Model):
         items = self.orderitems.select_related()
         return sum(list(map(lambda x: x.quantity * x.product.price, items)))
 
+    # переопределяем метод, удаляющий объект
     def delete(self):
         for item in self.orderitems.select_related():
             item.product.quantity += item.quantity
@@ -85,18 +82,22 @@ class OrderItem(models.Model):
 
     order = models.ForeignKey(
         Order,
-        related_name='orderitems',
-        on_delete=models.CASCADE,
+        related_name="orderitems",
+        on_delete=models.CASCADE
     )
     product = models.ForeignKey(
         Product,
         verbose_name='продукт',
-        on_delete=models.CASCADE,
+        on_delete=models.CASCADE
     )
     quantity = models.PositiveIntegerField(
         verbose_name='количество',
         default=0
     )
+
+    @staticmethod
+    def get_item(pk):
+        return OrderItem.objects.filter(pk=pk).first()
 
     def get_product_cost(self):
         return self.product.price * self.quantity
@@ -106,3 +107,4 @@ class OrderItem(models.Model):
         self.product.save()
 
         super(self.__class__, self).delete()
+

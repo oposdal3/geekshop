@@ -1,21 +1,21 @@
-from django.shortcuts import render, get_object_or_404
-from basketapp.models import Basket
-
 from django.contrib.auth.decorators import user_passes_test
+from django.http import Http404
+from django.shortcuts import render, get_object_or_404
 from django.utils.decorators import method_decorator
+from django.views.generic import DetailView, ListView
+
 from .models import Product, ProductCategory
-from django.views.generic import DetailView
+from random import randint
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-import random
 
 
 def get_hot_product():
     products = Product.objects.all()
 
-    return random.sample(list(products), 1)[0]
+    return products[randint(0, len(products) - 1)]
 
 
-def get_same_products(hot_product):
+def get_same_product(hot_product):
     same_products = Product.objects.filter(category=hot_product.category).exclude(pk=hot_product.pk)[:3]
 
     return same_products
@@ -39,37 +39,56 @@ class ProductDetailView(DetailView):
         return super().dispatch(*args, **kwargs)
 
 
-def products(request, pk=None):
-    title = 'каталог/продукты'
-    links_menu = ProductCategory.objects.all()
-
-    if request.user.is_authenticated:
-        basket = Basket.objects.filter(user=request.user)
+def products(request, pk=None, page=1):
+    title = 'Каталог товаров '
+    links_menu = ProductCategory.objects.filter(is_active=True)
 
     if pk is not None:
         if pk == 0:
-            products = Product.objects.all().order_by('price')
-            category = {'name': 'все'}
+            category = {'name': 'все', 'pk': 0}
+            products = Product.objects.filter(
+                is_active=True,
+                category__is_active=True
+            ).order_by('price')
+            title = f'Категория: "Все"'
         else:
             category = get_object_or_404(ProductCategory, pk=pk)
-            products = Product.objects.filter(category__pk=pk).order_by('price')
-        context = {
-            'products': products,
-            'title': title,
-            'category': category,
-            'links_menu': links_menu,
-        }
-        return render(request, 'products.html', context=context)
+            products = Product.objects.filter(
+                category__pk=pk,
+                is_active=True,
+                category__is_active=True).order_by(
+                'price')
+            title = f'Категория: "{category.name}"'  # title, H2 Категория: "Дом"
 
+        paginator = Paginator(products, 3)
+
+        try:
+            products_paginator = paginator.page(page)
+        except PageNotAnInteger:
+            products_paginator = paginator.page(1)
+        except EmptyPage:
+            products_paginator = paginator.page(paginator.num_pages)
+
+        context = {
+            'title': title,
+            'links_menu': links_menu,
+            'category': category,
+            'products': products_paginator,
+        }
+
+        return render(request, 'mainapp/products.html', context)
+
+    # Главная страница каталога товаров
     hot_product = get_hot_product()
-    same_products = get_same_products(hot_product)
+    same_products = get_same_product(hot_product)
 
     context = {
-        'links_menu': links_menu,
         'title': title,
+        'links_menu': links_menu,
         'hot_product': hot_product,
         'same_products': same_products,
     }
-    return render(request, 'products.html', context=context)
+
+    return render(request, 'mainapp/products.html', context)
 
 
