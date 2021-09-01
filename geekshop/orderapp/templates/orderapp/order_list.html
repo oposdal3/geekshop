@@ -1,0 +1,73 @@
+{% extends 'adminapp/base.html' %}
+{% load static %}
+{% block content %}
+
+{% if alert %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{ alert }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Создан</th>
+            <th>Обновлен</th>
+            <th>Статус</th>
+            <th>Детали</th>
+            <th>Править</th>
+            <th>Удалить</th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <th>ID</th>
+            <th>Создан</th>
+            <th>Обновлен</th>
+            <th>Статус</th>
+            <th>Детали</th>
+            <th>Править</th>
+            <th>Удалить</th>
+        </tr>
+        </tfoot>
+        <tbody>
+        {% for item in object_list %}
+        {% if item.is_active %}
+        <tr>
+            <td class="td1 orders_list">{{ item.pk }}</td>
+            <td>{{ item.created|date:"Y-m-d H:i:s" }}</td>
+            <td>{{ item.updated|date:"Y-m-d H:i:s" }}</td>
+            <td>{{ item.get_status_display }}</td>
+            <td>
+                <a href="{% url 'orderapp:order_read' item.pk %}">
+                    <i class='bx bx-detail text-primary bx-sm'></i>
+                </a>
+            </td>
+            <td>
+                {% if item.status == 'FM' %}
+                <a href="{% url 'orderapp:order_update' item.pk %}">
+                    <i class="bx bx-edit text-primary bx-sm"></i>
+                </a>
+                {% endif %}
+            </td>
+            <td>
+                {% if item.status == 'FM' %}
+                <a href="{% url 'orderapp:order_delete' item.pk %}">
+                    <i class='bx bxs-x-square bx-sm text-danger'></i>
+                </a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a href="{% url 'index' %}" class="btn btn-outline-primary btn-sm">на главную</a>
+<a href="{% url 'orderapp:order_create' %}" class="btn btn-outline-primary btn-sm">создать новый заказ</a>
+
+{% endblock %}

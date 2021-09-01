@@ -1,0 +1,27 @@
+{% extends 'geekshop/base.html' %}
+{% load static %}
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'basketapp/css/basket.css' %}">
+{% endblock %}
+{% block js %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="{% static 'basketapp/js/script.js' %}"></script>
+{% endblock %}
+{% block top %}
+<div class="hero">
+    {% include 'geekshop/includes/inc_main_menu.html' %}
+    <h1>{{ title }}</h1>
+</div>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="basket_list">
+        {% include 'basketapp/includes/inc_basket_list.html' %}
+    </div>
+</div>
+
+
+
+<div class="clr"></div>
+{% endblock%}

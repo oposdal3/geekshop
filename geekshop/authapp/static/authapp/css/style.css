@@ -1,0 +1,18 @@
+.social_link{
+    text-decoration: none;
+}
+
+.icon-social {
+    font-size: 36px;
+    border-radius: 50%;
+}
+
+.icon-social-ok {
+    color: #fff;
+    background: #ee8208;
+}
+
+.icon-social-vk {
+    color: #fff;
+    background: #4b729c;
+}

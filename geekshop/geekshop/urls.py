@@ -15,12 +15,28 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from mainapp import urls
 from . import views
+from authapp import urls as authapp_urls
+from mainapp import urls as mainapp_urls
+from basketapp import urls as basketapp_urls
+from adminapp import urls as adminapp_urls
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('products/', include(urls), name='prodicts'),
+    path('admin_staff/', include(adminapp_urls, namespace='admin_staff'), name='admin_staff'),
+    path('auth/', include(authapp_urls, namespace='auth'), name='auth'),
+    path('products/', include(mainapp_urls, namespace='products'), name='products'),
+    path('order/', include('orderapp.urls', namespace='order'), name='order'),
+    path('basket/', include(basketapp_urls, namespace='basket'), name='basket'),
     path('', views.index, name='index'),
     path('contact/', views.contacts, name='contacts'),
+    path('', include('social_django.urls', namespace='social')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT,
+    )

@@ -1,0 +1,50 @@
+[
+  {
+    "pk": 1,
+    "category": 1,
+    "name": "Стул фамильный",
+    "image": "products_images/product-21.jpg",
+    "short_desc": "Очень интересный стул",
+    "description": "Описание продукта",
+    "price": "6000.00",
+    "quantity": 15,
+    "created": "2021-05-30T23:07:09.026",
+    "updated": "2021-05-30T23:07:09.026"
+  },
+  {
+    "pk": 2,
+    "category": 1,
+    "name": "Кресло из серой кожи",
+    "image": "products_images/product-3-sm.jpg",
+    "short_desc": "уникальный дизайн",
+    "description": "Описание продукта",
+    "price": "9000.00",
+    "quantity": 10,
+    "created": "2021-05-30T23:08:53.933",
+    "updated": "2021-05-30T23:08:53.933"
+  },
+  {
+    "pk": 3,
+    "category": 1,
+    "name": "Лампа сфера",
+    "image": "products_images/product-1.jpg",
+    "short_desc": "Супер лампа",
+    "description": "Описание продукта",
+    "price": "7500.00",
+    "quantity": 30,
+    "created": "2021-05-30T23:10:33.652",
+    "updated": "2021-05-30T23:10:33.652"
+  },
+  {
+    "pk": 4,
+    "category": 1,
+    "name": "Псьменный стол",
+    "image": "products_images/slider-hotdeal.jpg",
+    "short_desc": "Лучший стол для работы",
+    "description": "Описание продукта",
+    "price": "10000.00",
+    "quantity": 10,
+    "created": "2021-05-30T23:12:06.141",
+    "updated": "2021-05-30T23:12:06.141"
+  }
+]

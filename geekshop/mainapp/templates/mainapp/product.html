@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load adminapp_tags %}
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'mainapp/style-products.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'basketapp/css/basket.css' %}">
+{% endblock %}
+{% block top %}
+{% include 'basketapp/includes/inc_basket.html' %}
+<div class="hero-white">
+    {% include 'geekshop/includes/inc_main_menu.html' %}
+</div>
+{% endblock %}
+{% block content %}
+<div class="details mb-3">
+    <div class="links clearfix">
+        {% include 'mainapp/includes/inc_categories_menu.html' %}
+    </div>
+
+    <div class="details-products">
+        <div class="details-slider">
+            <div class="slider-product">
+                <img src="{{ product.image|media_folder_products }}">
+            </div>
+            {% if product.image_preview_1 or product.image_preview_2 or product.image_preview_3 %}
+            <div class="slider-control">
+                {% if product.image_preview_1 %}
+                <div class="block">
+                    <a href="#"><img src="{{ product.image_preview_1|media_folder_products }}" class="img-prv"
+                                     alt="{{ product.name }}">
+                        <div class="text"></div>
+                    </a>
+                </div>
+                {% endif %}
+                {% if product.image_preview_2 %}
+                <div class="block">
+                    <a href="#"><img src="{{ product.image_preview_2|media_folder_products }}" class="img-prv"
+                                     alt="{{ product.name }}">
+                        <div class="text"></div>
+                    </a>
+                </div>
+                {% endif %}
+                {% if product.image_preview_3 %}
+                <div class="block">
+                    <a href="#"><img src="{{ product.image_preview_3|media_folder_products }}" class="img-prv"
+                                     alt="{{ product.name }}">
+                        <div class="text"></div>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="description">
+            <h3 class="big-bold">{{ product.name }}</h3>
+            <br>
+            <p class="price"> {{ product.price|floatformat:0 }} <span>руб</span></p>
+            <a href="{% url 'basket:add' product.pk %}" class="red-button">заказать <i class="fa fa-chevron-right"
+                                                                                       aria-hidden="true"></i></a>
+            <div class="description-text">
+                {{ product.description }}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clr"></div>
+{% endblock %}
