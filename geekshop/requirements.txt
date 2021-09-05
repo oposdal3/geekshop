@@ -7,3 +7,5 @@ pytz
 requests
 social-auth-app-django
 sqlparse
+django-debug-toolbar
+django-debug-toolbar-template-profiler
