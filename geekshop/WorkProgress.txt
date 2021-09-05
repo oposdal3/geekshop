@@ -1,0 +1,18 @@
+Transactions:                    230 hits
+Availability:                  99.57 %
+Elapsed time:                  21.52 secs
+Data transferred:               2.15 MB
+Response time:                  0.02 secs
+Transaction rate:              10.69 trans/sec
+Throughput:                     0.10 MB/sec
+Concurrency:                    0.25
+Successful transactions:         179
+Failed transactions:               1
+Longest transaction:            0.24
+Shortest transaction:           0.00
+
+Причина - Django не принимает POST-запросы без корректного значения
+«CSRF», так как по умолчанию работает слой защиты от подделки запроса
+«django.middleware.csrf.CsrfViewMiddleware». На время тестирования его
+необходимо закомментировать в списке «MIDDLEWARE» файла настроек и
+перезапустить сервер «gunicorn»
