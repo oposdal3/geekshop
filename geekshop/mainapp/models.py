@@ -10,7 +10,7 @@ class ProductCategory(models.Model):
                                    blank=True,  # Не обязательное поле для заполнения
                                    null=True)
 
-    is_active = models.BooleanField(verbose_name='активна', default=True)
+    is_active = models.BooleanField(db_index=True, verbose_name='активна', default=True)
 
     created = models.DateTimeField(auto_now_add=True)
 
@@ -94,7 +94,7 @@ class Product(models.Model):
 
     update = models.DateTimeField(auto_now=True)
 
-    is_active = models.BooleanField(verbose_name='активный', default=True)
+    is_active = models.BooleanField(db_index=True, verbose_name='активный', default=True)
 
     def __str__(self):
         return f'{self.name} id: {self.id} -- {self.created}'
