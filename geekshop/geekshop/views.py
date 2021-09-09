@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from django.shortcuts import render
-
+from mainapp.views import get_products
 from basketapp.models import Basket
 from mainapp.models import Product
 
 
 def index(request):
     title = 'geekshop'
-    products = Product.objects.all()[:4]
+    products = get_products()[:4]
     basket = []
 
     if request.user.is_authenticated:
