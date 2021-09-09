@@ -4,26 +4,51 @@
 
 {% block content %}
 {% include 'orderapp/includes/inc_order_summary.html' %}
-<div class="basket_list">
-    {% for item in object.orderitems.select_related %}
-    <div class="basket_record">
-        <img src="{{ item.product.image|media_folder_products }}"
-             alt="{{ item.product.short_desc }}">
-        <span class="category_name">
-                   {{ item.product.category.name }}
-               </span>
-        <span class="product_name">{{ item.product.name }}</span>
-        <span class="product_price">
-                   {{ item.product.price }}&nbspруб
-               </span>
-        <span class="product_quantitiy">
-                   x {{ item.quantity }} шт.
-               </span>
-        <span class="product_cost">
-                    = {{ item.get_product_cost }}&nbspруб
-               </span>
-    </div>
-    {% endfor %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th>Шт.</th>
+            <th>Сумма</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in object.get_items_cached %}
+        <tr>
+            <td>
+                <div class="header_img header_img-admin">
+                    <a href="{% url 'mainapp:product' item.product.pk %}">
+                    <img src="{{ item.product.image|media_folder_products }}"
+                         alt="{{ object.name }}"></a>
+                </div>
+            </td>
+            <td>
+                <a href="{% url 'mainapp:product' item.product.pk %}">{{ item.product.name }}</a>
+                <br>
+                {{ item.product.short_desc }}
+                <br>
+                {{ item.product.price }}&nbspруб
+            </td>
+            <td>
+                {{ item.quantity }} шт.
+            </td>
+            <td>
+                {{ item.get_product_cost }}&nbspруб
+            </td>
+        </tr>
+        {% endfor %}
+        {% with object_summary=object.get_summary %}
+        <tr>
+            <td></td>
+            <td></td>
+            <td>Итого:</td>
+            <td>{{ object_summary.total_cost }}&nbspруб</td>
+        </tr>
+        {% endwith %}
+        </tbody>
+    </table>
 </div>
 {% include 'orderapp/includes/inc_order_actions.html' %}
 

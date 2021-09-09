@@ -94,12 +94,12 @@ class OrderUpdate(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         data = super(OrderUpdate, self).get_context_data(**kwargs)
         OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=1)
+        data['title'] = f'Редактировать {self.object.get_name_order()}'
 
         if self.request.POST:
             data['orderitems'] = OrderFormSet(self.request.POST, instance=self.object)
         else:
-            queryset = self.object.orderitems.select_related()
-            formset = OrderFormSet(instance=self.object, queryset=queryset)
+            formset = OrderFormSet(instance=self.object)
             for form in formset.forms:
                 if form.instance.pk:
                     form.initial['price'] = form.instance.product.price
@@ -137,7 +137,7 @@ class OrderRead(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(OrderRead, self).get_context_data(**kwargs)
-        context['title'] = 'заказ/просмотр'
+        context['title'] = self.object.get_name_order
         return context
 
 
@@ -152,19 +152,19 @@ def order_forming_complete(request, pk):
 @receiver(pre_save, sender=OrderItem)
 @receiver(pre_save, sender=Basket)
 def product_quantity_update_save(sender, update_fields, instance, **kwargs):
-   if update_fields == 'quantity' or 'product':
-       if instance.pk:
-           instance.product.quantity -= instance.quantity - sender.get_item(instance.pk).quantity
-       else:
-           instance.product.quantity -= instance.quantity
-       instance.product.save()
+    if update_fields == 'quantity' or 'product':
+        if instance.pk:
+            instance.product.quantity -= instance.quantity - sender.get_item(instance.pk).quantity
+        else:
+            instance.product.quantity -= instance.quantity
+        instance.product.save()
 
 
 @receiver(pre_delete, sender=OrderItem)
 @receiver(pre_delete, sender=Basket)
 def product_quantity_update_delete(sender, instance, **kwargs):
-   instance.product.quantity += instance.quantity
-   instance.product.save()
+    instance.product.quantity += instance.quantity
+    instance.product.save()
 
 
 def get_product_price(request, pk):

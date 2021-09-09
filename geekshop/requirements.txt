@@ -4,6 +4,7 @@ django-environ
 Pillow
 psycopg2-binary
 pytz
+python_memcached
 requests
 social-auth-app-django
 sqlparse
