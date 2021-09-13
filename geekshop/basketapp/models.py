@@ -57,11 +57,3 @@ class Basket(models.Model):
         _items = self.get_items_cached
         _total_cost = sum(list(map(lambda x: x.product_cost, _items)))
         return _total_cost
-
-    # def save(self, *args, **kwargs):
-    #     if self.pk:
-    #         self.product.quantity -= self.quantity - self.__class__.get_item(self.pk).quantity
-    #     else:
-    #         self.product.quantity -= self.quantity
-    #     self.product.save()
-    #     super(self.__class__, self).save(*args, **kwargs)
